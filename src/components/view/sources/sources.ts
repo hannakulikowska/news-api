@@ -10,27 +10,29 @@ interface ISource {
   country: string;
 }
 
-interface ISourcesResponse {
+export interface ISourcesResponse {
   status: string;
   sources: ISource[];
 }
 
-class Sources {
-  draw(data) {
+export class Sources {
+  draw(data: ISource[]): void {
     const fragment = document.createDocumentFragment();
-    const sourceItemTemp = document.querySelector('#sourceItemTemp');
+    const sourceItemTemp = document.querySelector('#sourceItemTemp') as HTMLTemplateElement;
 
-    data.forEach((item) => {
-      const sourceClone = sourceItemTemp.content.cloneNode(true);
+    data.forEach((item: ISource) => {
+      const sourceClone = sourceItemTemp.content.cloneNode(true) as DocumentFragment;
 
-      sourceClone.querySelector('.source__item-name').textContent = item.name;
-      sourceClone.querySelector('.source__item').setAttribute('data-source-id', item.id);
+      const sourceItemName = sourceClone.querySelector('.source__item-name');
+      if (sourceItemName) sourceItemName.textContent = item.name;
+
+      const sourceItem = sourceClone.querySelector('.source__item');
+      if (sourceItem) sourceItem.setAttribute('data-source-id', item.id);
 
       fragment.append(sourceClone);
     });
 
-    document.querySelector('.sources').append(fragment);
+    const sourcesContainer = document.querySelector('.sources');
+    if (sourcesContainer) sourcesContainer.append(fragment);
   }
 }
-
-export default Sources;
