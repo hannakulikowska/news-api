@@ -23,37 +23,49 @@ interface IArticlesResponse {
 }
 
 class News {
-  draw(data) {
-    const news = data.length >= 10 ? data.filter((_item, idx) => idx < 10) : data;
+  draw(data: IArticlesResponse): void {
+    const news = data.articles.length >= 10 ? data.articles.filter((_item, idx) => idx < 10) : data.articles;
 
     const fragment = document.createDocumentFragment();
-    const newsItemTemp = document.querySelector('#newsItemTemp');
+    const newsItemTemp = document.querySelector('#newsItemTemp') as HTMLTemplateElement | null;
 
-    news.forEach((item, idx) => {
-      const newsClone = newsItemTemp.content.cloneNode(true);
+    if (!newsItemTemp) return;
 
-      if (idx % 2) newsClone.querySelector('.news__item').classList.add('alt');
+    news.forEach((item: IArticle, idx: number) => {
+      const newsClone = newsItemTemp.content.cloneNode(true) as DocumentFragment;
 
-      newsClone.querySelector('.news__meta-photo').style.backgroundImage = `url(${
-        item.urlToImage || 'img/news_placeholder.jpg'
-      })`;
-      newsClone.querySelector('.news__meta-author').textContent = item.author || item.source.name;
-      newsClone.querySelector('.news__meta-date').textContent = item.publishedAt
-        .slice(0, 10)
-        .split('-')
-        .reverse()
-        .join('-');
+      const newsItem = newsClone.querySelector('.news__item') as HTMLElement;
+      if (newsItem && idx % 2) newsItem.classList.add('alt');
 
-      newsClone.querySelector('.news__description-title').textContent = item.title;
-      newsClone.querySelector('.news__description-source').textContent = item.source.name;
-      newsClone.querySelector('.news__description-content').textContent = item.description;
-      newsClone.querySelector('.news__read-more a').setAttribute('href', item.url);
+      const metaPhoto = newsClone.querySelector('.news__meta-photo') as HTMLElement;
+      metaPhoto.style.backgroundImage = `url(${item.urlToImage || 'img/news_placeholder.jpg'})`;
+
+      const metaAuthor = newsClone.querySelector('.news__meta-author');
+      if (metaAuthor) metaAuthor.textContent = item.author || item.source.name;
+
+      const metaDate = newsClone.querySelector('.news__meta-date');
+      if (metaDate) metaDate.textContent = item.publishedAt.slice(0, 10).split('-').reverse().join('-');
+
+      const descriptionTitle = newsClone.querySelector('.news__description-title');
+      if (descriptionTitle) descriptionTitle.textContent = item.title;
+
+      const descriptionSource = newsClone.querySelector('.news__description-source');
+      if (descriptionSource) descriptionSource.textContent = item.source.name;
+
+      const descriptionContent = newsClone.querySelector('.news__description-content');
+      if (descriptionContent) descriptionContent.textContent = item.description;
+
+      const readMoreLink = newsClone.querySelector('.news__read-more a') as HTMLAnchorElement;
+      readMoreLink.setAttribute('href', item.url);
 
       fragment.append(newsClone);
     });
 
-    document.querySelector('.news').innerHTML = '';
-    document.querySelector('.news').appendChild(fragment);
+    const newsContainer = document.querySelector('.news');
+    if (newsContainer) {
+      newsContainer.innerHTML = '';
+      newsContainer.appendChild(fragment);
+    }
   }
 }
 
