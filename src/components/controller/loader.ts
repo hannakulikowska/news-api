@@ -15,22 +15,25 @@ export interface ILoader {
   ): void;
 }
 
-export class Loader {
-  constructor(baseLink, options) {
+export class Loader implements ILoader {
+  baseLink: string;
+  options: { [key: string]: string };
+
+  constructor(baseLink: string, options: { [key: string]: string }) {
     this.baseLink = baseLink;
     this.options = options;
   }
 
   getResp(
-    { endpoint, options = {} },
-    callback = () => {
+    { endpoint, options = {} }: { endpoint: string; options?: { [key: string]: string } },
+    callback: (data: unknown) => void = () => {
       console.error('No callback for GET response');
     }
-  ) {
+  ): void {
     this.load('GET', endpoint, callback, options);
   }
 
-  errorHandler(res) {
+  errorHandler(res: Response): Response {
     if (!res.ok) {
       if (res.status === 401 || res.status === 404)
         console.log(`Sorry, but there is ${res.status} error: ${res.statusText}`);
@@ -40,7 +43,7 @@ export class Loader {
     return res;
   }
 
-  makeUrl(options, endpoint) {
+  makeUrl(options: { [key: string]: string }, endpoint: string): string {
     const urlOptions = { ...this.options, ...options };
     let url = `${this.baseLink}${endpoint}?`;
 
@@ -51,7 +54,12 @@ export class Loader {
     return url.slice(0, -1);
   }
 
-  load(method, endpoint, callback, options = {}) {
+  load(
+    method: 'GET' | 'POST',
+    endpoint: string,
+    callback: (data: unknown) => void,
+    options: { [key: string]: string } = {}
+  ): void {
     fetch(this.makeUrl(options, endpoint), { method })
       .then(this.errorHandler)
       .then((res) => res.json())
