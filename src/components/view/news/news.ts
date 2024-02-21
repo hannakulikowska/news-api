@@ -16,13 +16,13 @@ interface IArticle {
   content: string;
 }
 
-interface IArticlesResponse {
+export interface IArticlesResponse {
   status: string;
   totalResults: number;
   articles: IArticle[];
 }
 
-class News {
+export class News {
   draw(data: IArticlesResponse): void {
     const news = data.articles.length >= 10 ? data.articles.filter((_item, idx) => idx < 10) : data.articles;
 
@@ -68,5 +68,3 @@ class News {
     }
   }
 }
-
-export default News;
