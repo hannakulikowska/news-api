@@ -1,5 +1,20 @@
 import './sources.css';
 
+interface ISource {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  category: string;
+  language: string;
+  country: string;
+}
+
+interface ISourcesResponse {
+  status: string;
+  sources: ISource[];
+}
+
 class Sources {
   draw(data) {
     const fragment = document.createDocumentFragment();
