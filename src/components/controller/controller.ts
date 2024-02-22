@@ -4,12 +4,12 @@ import { ILoader } from './loader';
 import { IArticlesResponse } from '../view/news/news';
 import { ISourcesResponse } from '../view/sources/sources';
 
-interface IAppController extends ILoader {
+export interface IAppController extends ILoader {
   getSources(callback: (data: ISourcesResponse) => void): void;
   getNews(e: MouseEvent, callback: (data: IArticlesResponse) => void): void;
 }
 
-class AppController extends AppLoader implements IAppController {
+export class AppController extends AppLoader implements IAppController {
   getSources(callback: (data: ISourcesResponse) => void): void {
     super.getResp<ISourcesResponse>(
       {
@@ -44,5 +44,3 @@ class AppController extends AppLoader implements IAppController {
     }
   }
 }
-
-export default AppController;

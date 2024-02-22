@@ -1,23 +1,31 @@
-import AppController from '../controller/controller';
 import { AppView } from '../view/appView';
-
-interface IApp {
-  controller: AppController;
-  view: AppView;
-  start(): void;
-}
+import { AppController, IAppController } from '../controller/controller';
+import { IArticlesResponse } from '../view/news/news';
+import { ISourcesResponse } from '../view/sources/sources';
 
 class App {
+  controller: IAppController;
+  view: AppView;
+
   constructor() {
     this.controller = new AppController();
     this.view = new AppView();
   }
 
   start() {
-    document
-      .querySelector('.sources')
-      .addEventListener('click', (e) => this.controller.getNews(e, (data) => this.view.drawNews(data)));
-    this.controller.getSources((data) => this.view.drawSources(data));
+    const sources = document.querySelector('.sources');
+
+    if (sources) {
+      sources.addEventListener('click', (e: Event) => {
+        if (e instanceof MouseEvent) {
+          this.controller.getNews(e, (data: IArticlesResponse) => {
+            this.view.drawNews(data);
+          });
+        }
+      });
+    }
+
+    this.controller.getSources((data: ISourcesResponse) => this.view.drawSources(data));
   }
 }
 
