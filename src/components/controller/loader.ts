@@ -24,9 +24,9 @@ export class Loader implements ILoader {
     this.options = options;
   }
 
-  getResp(
+  getResp<T>(
     { endpoint, options = {} }: { endpoint: string; options?: { [key: string]: string } },
-    callback: (data: unknown) => void = () => {
+    callback: (data: T) => void = () => {
       console.error('No callback for GET response');
     }
   ): void {
@@ -54,16 +54,16 @@ export class Loader implements ILoader {
     return url.slice(0, -1);
   }
 
-  load(
+  load<T>(
     method: 'GET' | 'POST',
     endpoint: string,
-    callback: (data: unknown) => void,
+    callback: (data: T) => void,
     options: { [key: string]: string } = {}
   ): void {
     fetch(this.makeUrl(options, endpoint), { method })
       .then(this.errorHandler)
       .then((res) => res.json())
-      .then((data) => callback(data))
+      .then((data) => callback(data as T))
       .catch((err) => console.error(err));
   }
 }
