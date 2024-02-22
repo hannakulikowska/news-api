@@ -1,3 +1,5 @@
+type HttpMethod = 'GET' | 'POST';
+
 export interface ILoader {
   baseLink: string;
   options: { [key: string]: string };
@@ -8,7 +10,7 @@ export interface ILoader {
   errorHandler(res: Response): Response;
   makeUrl(options: { [key: string]: string }, endpoint: string): string;
   load(
-    method: 'GET' | 'POST',
+    method: HttpMethod,
     endpoint: string,
     callback: (data: unknown) => void,
     options?: { [key: string]: string }
@@ -55,7 +57,7 @@ export class Loader implements ILoader {
   }
 
   load<T>(
-    method: 'GET' | 'POST',
+    method: HttpMethod,
     endpoint: string,
     callback: (data: T) => void,
     options: { [key: string]: string } = {}
