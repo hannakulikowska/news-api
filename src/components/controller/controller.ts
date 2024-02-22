@@ -1,14 +1,17 @@
 import AppLoader from './appLoader';
 import { ILoader } from './loader';
 
+import { IArticlesResponse } from '../view/news/news';
+import { ISourcesResponse } from '../view/sources/sources';
+
 interface IAppController extends ILoader {
-  getSources(callback: (data: unknown) => void): void;
-  getNews(e: MouseEvent, callback: (data: unknown) => void): void;
+  getSources(callback: (data: ISourcesResponse) => void): void;
+  getNews(e: MouseEvent, callback: (data: IArticlesResponse) => void): void;
 }
 
-class AppController extends AppLoader {
-  getSources(callback) {
-    super.getResp(
+class AppController extends AppLoader implements IAppController {
+  getSources(callback: (data: ISourcesResponse) => void): void {
+    super.getResp<ISourcesResponse>(
       {
         endpoint: 'sources',
       },
@@ -16,14 +19,14 @@ class AppController extends AppLoader {
     );
   }
 
-  getNews(e, callback) {
-    let target = e.target;
-    const newsContainer = e.currentTarget;
+  getNews(e: MouseEvent, callback: (data: IArticlesResponse) => void): void {
+    let target = e.target as HTMLElement;
+    const newsContainer = e.currentTarget as HTMLElement;
 
     while (target !== newsContainer) {
       if (target.classList.contains('source__item')) {
         const sourceId = target.getAttribute('data-source-id');
-        if (newsContainer.getAttribute('data-source') !== sourceId) {
+        if (sourceId && newsContainer.getAttribute('data-source') !== sourceId) {
           newsContainer.setAttribute('data-source', sourceId);
           super.getResp(
             {
@@ -37,7 +40,7 @@ class AppController extends AppLoader {
         }
         return;
       }
-      target = target.parentNode;
+      target = target.parentNode as HTMLElement;
     }
   }
 }
