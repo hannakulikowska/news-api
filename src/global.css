@@ -35,8 +35,10 @@ footer .copyright {
 footer .copyright a {
     color: #444;
 }
-footer .copyright a:hover {
-    color: #555;
+@media (hover: hover) {
+    footer .copyright a:hover {
+            color: #555;
+        }
 }
 footer .copyright:before {
     content: '©';
