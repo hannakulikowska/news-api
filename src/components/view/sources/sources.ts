@@ -1,13 +1,14 @@
 import './sources.css';
+import { Category, Language, Country } from '../news/enums';
 
 interface ISource {
   id: string;
   name: string;
   description: string;
   url: string;
-  category: string;
-  language: string;
-  country: string;
+  category: Category;
+  language: Language;
+  country: Country;
 }
 
 export interface ISourcesResponse {

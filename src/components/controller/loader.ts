@@ -1,14 +1,20 @@
 type HttpMethod = 'GET' | 'POST';
 
+interface LoaderOptions {
+  apiKey: string;
+  otherOption?: string;
+  sources?: string;
+}
+
 export interface ILoader {
   baseLink: string;
-  options: { [key: string]: string };
+  options: Partial<LoaderOptions>;
   getResp(
-    { endpoint, options }: { endpoint: string; options?: { [key: string]: string } },
+    { endpoint, options }: { endpoint: string; options?: Partial<LoaderOptions> },
     callback: (data: unknown) => void
   ): void;
   errorHandler(res: Response): Response;
-  makeUrl(options: { [key: string]: string }, endpoint: string): string;
+  makeUrl(options: Partial<LoaderOptions>, endpoint: string): string;
   load(
     method: HttpMethod,
     endpoint: string,
@@ -18,16 +24,16 @@ export interface ILoader {
 }
 
 export class Loader implements ILoader {
-  baseLink: string;
-  options: { [key: string]: string };
-
-  constructor(baseLink: string, options: { [key: string]: string }) {
+  constructor(
+    public baseLink: string,
+    public options: Partial<LoaderOptions>
+  ) {
     this.baseLink = baseLink;
     this.options = options;
   }
 
   getResp<T>(
-    { endpoint, options = {} }: { endpoint: string; options?: { [key: string]: string } },
+    { endpoint, options = {} }: { endpoint: string; options?: Partial<LoaderOptions> },
     callback: (data: T) => void = () => {
       console.error('No callback for GET response');
     }
@@ -45,12 +51,15 @@ export class Loader implements ILoader {
     return res;
   }
 
-  makeUrl(options: { [key: string]: string }, endpoint: string): string {
-    const urlOptions = { ...this.options, ...options };
+  makeUrl(options: Partial<LoaderOptions>, endpoint: string): string {
+    const urlOptions: Record<string, string> = { ...this.options, ...options };
     let url = `${this.baseLink}${endpoint}?`;
 
     Object.keys(urlOptions).forEach((key) => {
-      url += `${key}=${urlOptions[key]}&`;
+      const value = urlOptions[key];
+      if (value !== undefined) {
+        url += `${key}=${urlOptions[key]}&`;
+      }
     });
 
     return url.slice(0, -1);
@@ -60,7 +69,7 @@ export class Loader implements ILoader {
     method: HttpMethod,
     endpoint: string,
     callback: (data: T) => void,
-    options: { [key: string]: string } = {}
+    options: Partial<LoaderOptions> = {}
   ): void {
     fetch(this.makeUrl(options, endpoint), { method })
       .then(this.errorHandler)

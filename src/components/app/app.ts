@@ -4,8 +4,8 @@ import { IArticlesResponse } from '../view/news/news';
 import { ISourcesResponse } from '../view/sources/sources';
 
 class App {
-  controller: IAppController;
-  view: AppView;
+  private controller: IAppController;
+  private view: AppView;
 
   constructor() {
     this.controller = new AppController();
